@@ -13,7 +13,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Git Clone Action
     - name: make riot dir
       run: mkdir ../RIOT
     - name: clone RIOT
