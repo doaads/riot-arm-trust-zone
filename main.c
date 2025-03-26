@@ -50,6 +50,8 @@ void kernel_init(void)
 
         /* Jump to non-secure world after kernel init */
         jump_to_nonsecure();
+    } else {
+        jump_to_nonsecure();
     }
 
     /* serious trouble! nothing to boot */
