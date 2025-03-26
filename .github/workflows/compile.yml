@@ -1,0 +1,22 @@
+name: Compilation
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Git Clone Action
+    - name: make riot dir
+      run: mkdir ../RIOT
+    - name: clone RIOT
+      run: git clone https://github.com/doaads/RIOT ../RIOT --depth 1 
+    - name: make
+      run: make BOARD=nucleo-l552ze-q
