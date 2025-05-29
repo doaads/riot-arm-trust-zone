@@ -13,50 +13,55 @@
 #include "include/tz_config.h"
 
 void TZ_init(void) {
-    SCB->VTOR = (NON_SECURE_FLASH_ADDR);
-    SAU->CTRL = (0);  /* Disable SAU before configuring */
+    RCC->AHB1ENR |= RCC_AHB1ENR_GTZCEN;
 
-    /* Allow Non-Secure Flash execution (0x08020000 - 0x080FFFFF) */
-    SAU->RNR  = (0);
+    // Mark SRAM1 as non-secure
+    for (int i = 0; i < 256; i++) {
+        GTZC_MPCBB1->VCTR[i] = 0x00000000;
+    }
+
+    //GTZC_MPCBB1->LCKVTR1 = 0xFFFFFFFF; // Lock all 8
+
+    SAU->CTRL = 0;  /* Disable SAU before configuring */
+
+    /* Allow Non-Secure Flash execution (0x08040000 - 0x080FFFFF) */
+    SAU->RNR  = 0;
     SAU->RBAR = (NON_SECURE_FLASH_ADDR & SAU_RBAR_BADDR_Msk);
     SAU->RLAR = (NON_SECURE_FLASH_END & SAU_RLAR_LADDR_Msk) | SAU_RLAR_ENABLE_Msk;
 
-    /* Allow Non-Secure SRAM access (0x20000000 - 0x2FFFFFFF) */
-    SAU->RNR++;
+    /* Allow Non-Secure SRAM access (0x20018000 - 0x2003FFFF) */
+    SAU->RNR = 1;
     SAU->RBAR = (NON_SECURE_SRAM_ADDR & SAU_RBAR_BADDR_Msk);
     SAU->RLAR = (NON_SECURE_SRAM_END & SAU_RLAR_LADDR_Msk) | SAU_RLAR_ENABLE_Msk;
 
     /* Allow Non-Secure Callable (NSC) region (0x0C000000 - 0x0FFFFFFF) */
-    SAU->RNR++;
-    SAU->RBAR = (NSC_ADDR & SAU_RBAR_BADDR_Msk);
+    SAU->RNR = 2;
+    SAU->RBAR = (NSC_ADDR & SAU_RBAR_BADDR_Msk); 
     SAU->RLAR = (NSC_END & SAU_RLAR_LADDR_Msk) | SAU_RLAR_ENABLE_Msk | SAU_RLAR_NSC_Msk;
 
     /* Enable SAU */
-    /* Set ENABLE bit[0] to 1 */
     SAU->CTRL |= SAU_CTRL_ENABLE_Msk;
-    /* SAU->CTRL |= SAU_CTRL_ALLNS_Msk; */
+    /*SAU->CTRL |= SAU_CTRL_ALLNS_Msk*/;
 
-    /* Data Synchronization Barrier */
     __DSB();
-
-    /* Information Synchronization Barrier */
     __ISB();
 }
+
+typedef void (*funcptr_ns)(void) __attribute__((cmse_nonsecure_call));
 
 void jump_to_nonsecure(void) {
+    uint32_t *ns_vector_table = (uint32_t*)NON_SECURE_FLASH_ADDR;
+    uint32_t msp_ns_value = ns_vector_table[0];
+    uint32_t reset_ns = ns_vector_table[1];
     TZ_init();
 
-    __TZ_set_MSP_NS(*((volatile uint32_t *)(SCB->VTOR)));
+    __TZ_set_MSP_NS(msp_ns_value);
 
-    uint32_t ns_reset_vector = *((volatile uint32_t *)(SCB->VTOR + 4U));
+    //SCB->VTOR = (uint32_t)ns_vector_table;
+    //__TZ_set_CONTROL_NS(1);
+    SCB_NS->VTOR = (uint32_t)ns_vector_table;
 
-    // uint32_t control = __get_CONTROL();
-    // control &= ~CONTROL_nPRIV_Msk;
-    // __set_CONTROL(control);
+    funcptr_ns ns_entry = (funcptr_ns) cmse_nsfptr_create((void*)reset_ns);
+    ns_entry();
 
-    __ISB();
-
-    /* Branch with Exchange */
-    __asm__ volatile("BX %0" ::"r"(ns_reset_vector) : "memory");
 }
-

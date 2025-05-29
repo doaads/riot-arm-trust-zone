@@ -64,3 +64,9 @@ NORETURN void core_panic(core_panic_t crash_code, const char *message)
     (void)message;
     while (1) {}
 }
+
+int main(void) {
+    kernel_init();   // your fancy custom kernel init
+    return 0;
+}
+

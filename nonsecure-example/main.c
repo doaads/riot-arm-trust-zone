@@ -22,6 +22,7 @@
  * @}
  */
 
+#include <arm_cmse.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -39,6 +40,16 @@ int main(void)
 #endif
 
     (void) puts("Welcome to RIOT!");
+    /* Query the security attribute of this function’s address */
+    //cmse_address_info_t info = cmse_TT_fptr((void *)main);
+
+    //if (info.flags.secure) {
+    //    puts("Running in Secure world!");
+    //}
+    //else {
+    //    puts("Running in Non-Secure world!");
+    //}
+
 
     char line_buf[SHELL_DEFAULT_BUFSIZE];
     shell_run(NULL, line_buf, SHELL_DEFAULT_BUFSIZE);
