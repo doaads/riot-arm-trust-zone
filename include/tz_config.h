@@ -33,7 +33,4 @@ void TZ_init(void);
 
 void jump_to_nonsecure(void);
 
-void secure_fault_handler(void);
-void hard_fault_handler(void);
-
 #endif

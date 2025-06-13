@@ -20,41 +20,12 @@
  * @}
  */
 
-#include "cpu.h"
 #include "panic.h"
-#include "riotboot/slot.h"
 #include "include/tz_config.h"
 
 void kernel_init(void)
 {
-    uint32_t version = 0;
-    int slot = -1;
-
-    for (unsigned i = 0; i < riotboot_slot_numof; i++) {
-        const riotboot_hdr_t *riot_hdr = riotboot_slot_get_hdr(i);
-        if (riotboot_slot_validate(i)) {
-            /* skip slot if metadata broken */
-            continue;
-        }
-        if (riot_hdr->start_addr != riotboot_slot_get_image_startaddr(i)) {
-            continue;
-        }
-        if (slot == -1 || riot_hdr->version > version) {
-            version = riot_hdr->version;
-            slot = i;
-        }
-    }
-
-    if (slot != -1) {
-        riotboot_slot_jump(slot);
-
-        /* Jump to non-secure world after kernel init */
-        jump_to_nonsecure();
-    } else {
-        jump_to_nonsecure();
-    }
-
-    /* serious trouble! nothing to boot */
+    jump_to_nonsecure();
     while (1) {}
 }
 
@@ -66,7 +37,7 @@ NORETURN void core_panic(core_panic_t crash_code, const char *message)
 }
 
 int main(void) {
-    kernel_init();   // your fancy custom kernel init
+    kernel_init();
     return 0;
 }
 

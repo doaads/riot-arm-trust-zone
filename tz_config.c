@@ -13,6 +13,13 @@
 #include "include/tz_config.h"
 
 void TZ_init(void) {
+
+    RCC->AHB1ENR |= RCC_AHB1ENR_GTZCEN;
+
+    for (int i = 0; i < 256; i++) {
+        GTZC_MPCBB1->VCTR[i] = 0x00000000;
+    }
+
     SAU->CTRL = 0;  /* Disable SAU before configuring */
 
     /* Allow Non-Secure Flash execution (0x08040000 - 0x0807FFFF) */
@@ -42,17 +49,26 @@ typedef void (*funcptr_ns)(void) __attribute__((cmse_nonsecure_call));
 
 void jump_to_nonsecure(void) {
     uint32_t *ns_vector_table = (uint32_t*)NON_SECURE_FLASH_ADDR;
-    uint32_t msp_ns_value = ns_vector_table[0];
-    uint32_t reset_ns = ns_vector_table[1];
+
+    /* This needs to be fixed - we should be getting these from ns_vector_table */
+    //uint32_t msp_ns_value = ns_vector_table[0];
+    uint32_t msp_ns_value = 0x20018200;
+    //uint32_t reset_ns = ns_vector_table[1];
+    uint32_t reset_ns = 0x804061d;
+
+    /* map memory regions */
     TZ_init();
 
+    /* set the stack pointer */
     __TZ_set_MSP_NS(msp_ns_value);
 
-    //SCB->VTOR = (uint32_t)ns_vector_table;
-    //__TZ_set_CONTROL_NS(0);
+    /* set VTOR */
     SCB_NS->VTOR = (uint32_t)ns_vector_table;
 
+    /* create an entry point */
     funcptr_ns ns_entry = (funcptr_ns) cmse_nsfptr_create((void*)reset_ns);
+
+    /* call */
     ns_entry();
 
 }

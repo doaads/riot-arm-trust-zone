@@ -13,7 +13,7 @@ CFLAGS += -Wno-error=cast-align
 
 LINKER_SCRIPT = ../linker/nonsecure-memory.ld
 
-#CFLAGS += -DDISABLE_BOARD_INIT=1
+CFLAGS += -DDISABLE_BOARD_INIT=1
 CFLAGS += -DDISABLE_CPU_INIT=1
 
 # Uncomment these lines if you want to use platform support from external
@@ -38,22 +38,22 @@ QUIET ?= 1
 
 # Modules to include:
 USEMODULE += shell
-USEMODULE += shell_cmds_default
-USEMODULE += ps
+#USEMODULE += shell_cmds_default
+#USEMODULE += ps
 # include and auto-initialize all available sensors
-USEMODULE += saul_default
+#USEMODULE += saul_default
 
 # Use a network interface, if available. The handling is done in
 # Makefile.board.dep, which is processed recursively as part of the dependency
 # resolution.
-FEATURES_OPTIONAL += netif
+#FEATURES_OPTIONAL += netif
 
-FEATURES_OPTIONAL += periph_rtc
+#FEATURES_OPTIONAL += periph_rtc
 
-ifneq (,$(filter msba2,$(BOARD)))
-  USEMODULE += mci
-  USEMODULE += random
-endif
+#ifneq (,$(filter msba2,$(BOARD)))
+#  USEMODULE += mci
+#  USEMODULE += random
+#endif
 
 include $(RIOTBASE)/Makefile.include
 
