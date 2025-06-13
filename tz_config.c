@@ -13,18 +13,9 @@
 #include "include/tz_config.h"
 
 void TZ_init(void) {
-    RCC->AHB1ENR |= RCC_AHB1ENR_GTZCEN;
-
-    // Mark SRAM1 as non-secure
-    for (int i = 0; i < 256; i++) {
-        GTZC_MPCBB1->VCTR[i] = 0x00000000;
-    }
-
-    //GTZC_MPCBB1->LCKVTR1 = 0xFFFFFFFF; // Lock all 8
-
     SAU->CTRL = 0;  /* Disable SAU before configuring */
 
-    /* Allow Non-Secure Flash execution (0x08040000 - 0x080FFFFF) */
+    /* Allow Non-Secure Flash execution (0x08040000 - 0x0807FFFF) */
     SAU->RNR  = 0;
     SAU->RBAR = (NON_SECURE_FLASH_ADDR & SAU_RBAR_BADDR_Msk);
     SAU->RLAR = (NON_SECURE_FLASH_END & SAU_RLAR_LADDR_Msk) | SAU_RLAR_ENABLE_Msk;
@@ -41,7 +32,7 @@ void TZ_init(void) {
 
     /* Enable SAU */
     SAU->CTRL |= SAU_CTRL_ENABLE_Msk;
-    /*SAU->CTRL |= SAU_CTRL_ALLNS_Msk*/;
+    /*SAU->CTRL |= SAU_CTRL_ALLNS_Msk;*/
 
     __DSB();
     __ISB();
@@ -58,7 +49,7 @@ void jump_to_nonsecure(void) {
     __TZ_set_MSP_NS(msp_ns_value);
 
     //SCB->VTOR = (uint32_t)ns_vector_table;
-    //__TZ_set_CONTROL_NS(1);
+    //__TZ_set_CONTROL_NS(0);
     SCB_NS->VTOR = (uint32_t)ns_vector_table;
 
     funcptr_ns ns_entry = (funcptr_ns) cmse_nsfptr_create((void*)reset_ns);

@@ -13,7 +13,7 @@ CFLAGS += -Wno-error=cast-align
 
 LINKER_SCRIPT = ../linker/nonsecure-memory.ld
 
-CFLAGS += -DDISABLE_BOARD_INIT=1
+#CFLAGS += -DDISABLE_BOARD_INIT=1
 CFLAGS += -DDISABLE_CPU_INIT=1
 
 # Uncomment these lines if you want to use platform support from external
@@ -57,13 +57,5 @@ endif
 
 include $(RIOTBASE)/Makefile.include
 
-## Override FLASH_ADDR to program at the Secure flash base
-#FLASH_ADDR ?= 0x08040000        # start of Secure flash bank
-#
-## flash-secure: build and flash just the Secure ELF
-#flash-secure: all $(FLASHDEPS)
-#	@$(call check_cmd,$(FLASHER), "Flashing Secure image at $(FLASH_ADDR)")
-#	$(PROGRAMMER_FLASH)
-#
 ## Set a custom channel if needed
 include $(RIOTMAKE)/default-radio-settings.inc.mk
