@@ -17,14 +17,12 @@
 #  define NON_SECURE_SRAM_END    0x2003FFFF   /* end of NS-SRAM */ 
 #endif
 
-/* Non-Secure-Callable region: 8 KB at 0x0C03E000–0x0C03FFFF */
+/* Non-Secure-Callable region: 8 KB at 0x08030000–0x080301FF */
 #ifndef NSC_ADDR
-//#  define NSC_ADDR               0x08000000   /* start of NSC window */ 
-#    define NSC_ADDR               0x0803E000
+#    define NSC_ADDR               0x08030000
 #endif
 #ifndef NSC_END
-//#  define NSC_END                0x0C03FFFF   /* end of NSC window */ 
-#    define NSC_END                0x0803FFFF
+#define NSC_END  (NSC_ADDR + 0x20 - 1)
 #endif
 
 
@@ -32,5 +30,7 @@
 void TZ_init(void);
 
 void jump_to_nonsecure(void);
+
+void secure_periph_init(void);
 
 #endif

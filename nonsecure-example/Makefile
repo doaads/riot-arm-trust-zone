@@ -7,11 +7,24 @@ BOARD ?= nucleo-l552ze-q
 # This has to be the absolute path to the RIOT base directory:
 RIOTBASE ?= $(CURDIR)/../../RIOT
 
+# mark this as a non-secure image (skip some peripherial inits)
+CFLAGS += -DTZ_NS_IMAGE
+
 CFLAGS += -mcmse
 CFLAGS += -Wno-cast-align
 CFLAGS += -Wno-error=cast-align
 
+SECURE_BUILD_DIR ?= ../bin/$(BOARD)/
+
 LINKER_SCRIPT = ../linker/nonsecure-memory.ld
+
+# For NSC configuration
+
+SECURE_BUILD_DIR ?= ../secure_bootloader/bin/$(BOARD)/
+SECURE_EXPORTS := $(SECURE_BUILD_DIR)/secure_exports.o
+
+LINKFLAGS += -Wl,--undefined=uart_write_secure
+LINKFLAGS += -Wl,--defsym=__ns_uart_write_secure=0x08030000
 
 CFLAGS += -DDISABLE_BOARD_INIT=1
 CFLAGS += -DDISABLE_CPU_INIT=1
@@ -38,8 +51,8 @@ QUIET ?= 1
 
 # Modules to include:
 USEMODULE += shell
-#USEMODULE += shell_cmds_default
-#USEMODULE += ps
+USEMODULE += shell_cmds_default
+USEMODULE += ps
 # include and auto-initialize all available sensors
 #USEMODULE += saul_default
 

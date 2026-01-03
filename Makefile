@@ -12,14 +12,17 @@ USEPKG += cmsis
 #CFLAGS += -DDISABLE_BOARD_INIT=1
 #CFLAGS += -DDISABLE_CPU_INIT=1
 
-# CFLAGS += -DCONFIG_TRUSTZONE
-# CFLAGS += -DCONFIG_TRUSTZONE_SECURE
+RIOT_THREAD_STACKSIZE_MAIN ?= 4096
 
 CFLAGS += -mcmse
+CFLAGS += -mthumb
 CFLAGS += -mcpu=cortex-m33
 CFLAGS += -Wno-cast-align
 CFLAGS += -Wno-error=cast-align
+CFLAGS += -fno-lto
 
-#LINKER_SCRIPT = linker/secure-memory.ld
+LINKER_SCRIPT = linker/secure-memory.ld
+LINKFLAGS += -Wl,--cmse-implib,--out-implib=$(BINDIR)/secure_exports.o
+LINKFLAGS += -Wl,--just-symbols=$(SECURE_BUILD_DIR)/export.txt
 
 include riotboot_common.mk

@@ -22,12 +22,13 @@
 
 #include "panic.h"
 #include "include/tz_config.h"
+#include <stdio.h>
 
-void kernel_init(void)
-{
-    jump_to_nonsecure();
-    while (1) {}
-}
+//void kernel_init(void)
+//{
+//    jump_to_nonsecure();
+//    while (1) {}
+//}
 
 NORETURN void core_panic(core_panic_t crash_code, const char *message)
 {
@@ -37,7 +38,8 @@ NORETURN void core_panic(core_panic_t crash_code, const char *message)
 }
 
 int main(void) {
-    kernel_init();
+    puts("RIOT OS secure-bootloader\n");
+    jump_to_nonsecure();
     return 0;
 }
 

@@ -1,6 +1,3 @@
-# Default testing board
-BOARD ?= samr21-xpro
-
 # Select the boards with riotboot feature
 FEATURES_REQUIRED += riotboot
 
@@ -11,12 +8,14 @@ CFLAGS += -DRIOTBOOT
 
 # Disable unused modules
 CFLAGS += -DNDEBUG -DLOG_LEVEL=LOG_NONE
-DISABLE_MODULE += core_init core_msg core_panic
+DISABLE_MODULE += core_panic
+#DISABLE_MODULE += core_msg
+#DISABLE_MODULE += core_init
 DISABLE_MODULE += auto_init auto_init_%
 DISABLE_MODULE += pm_layered
 
 # avoid using stdio
-USEMODULE += stdio_null
+#USEMODULE += stdio_null
 
 # RIOT codebase
 RIOTBASE ?= $(CURDIR)/../RIOT
@@ -26,4 +25,4 @@ include $(RIOTBASE)/Makefile.include
 # limit riotboot bootloader size
 # TODO: Manage to set this variable for boards which already embed a
 # bootloader, currently it will be overwritten
-FW_ROM_LEN := $(RIOTBOOT_LEN)
+#FW_ROM_LEN := $(RIOTBOOT_LEN)

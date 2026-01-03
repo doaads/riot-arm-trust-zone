@@ -27,9 +27,52 @@
 #include <string.h>
 
 #include "shell.h"
+#include "ns_uart.h"
+#include <arm_cmse.h>
+#include "core_cm33.h"
+
 
 #include "net/gnrc/pktdump.h"
 #include "net/gnrc.h"
+
+/*void uart_write(uart_t uart, const uint8_t *data, size_t len)
+{
+    void (*secure_call)(uart_t, const uint8_t*, size_t) = 
+        (void (*)(uart_t, const uint8_t*, size_t))
+        cmse_nsfptr_create((void*)__ns_uart_write_secure);
+
+    secure_call(uart, data, len);
+}*/
+
+void uart_write(uart_t uart, const uint8_t *data, size_t len)
+{
+    (void) uart;
+    (void) data;
+    (void) len;
+    /* create a pointer to the function */
+    void (*secure_call)(void) = 
+        (void (*)(void))
+        cmse_nsfptr_create((void*)__ns_uart_write_secure);
+
+    /* call the function */
+    secure_call();
+}
+
+
+//void uart_write(uart_t uart, const uint8_t *data, size_t len)
+//{
+//    (void) uart;
+//    (void) data;
+//    (void) len;
+//
+//    /* create a pointer to the function */
+//    void (*secure_call)(void) = 
+//        (void (*)(void))
+//        cmse_nsfptr_create((void*)__ns_uart_write_secure);
+//
+//    /* call the function */
+//    secure_call();
+//}
 
 int main(void)
 {

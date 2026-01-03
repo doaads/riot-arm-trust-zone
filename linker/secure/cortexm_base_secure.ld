@@ -1,22 +1,31 @@
-/* secure-memory.ld: override Secure-world memory for RIOT’s linker */
-
-/* Secure partitions */
-_rom_start_addr = 0x08000000;      /* start of Secure Flash */
-_rom_length     = 0x00030000;      /* Secure Flash          */
-_ram_start_addr = 0x20000000;      /* start of Secure SRAM  */
-_ram_length     = 0x00018000;      /* Secure SRAM           */
-
-_nsc_start_addr = 0x08030000;      /* NSC                   */
-_nsc_length     = 0x400;
-
-INCLUDE cortexm_rom_offset.ld
-
-MEMORY
-{
-    rom      (rx)   : ORIGIN = _rom_start_addr + _rom_offset,                  LENGTH = _fw_rom_length
-    nsc      (rx)   : ORIGIN = _nsc_start_addr,                                LENGTH = _nsc_length
-    ram      (w!rx) : ORIGIN = _ram_start_addr,                                LENGTH = _ram_length
-}
+/* ----------------------------------------------------------------------------
+ *         SAM Software Package License
+ * ----------------------------------------------------------------------------
+ * Copyright (c) 2012, Atmel Corporation
+ *
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following condition is met:
+ *
+ * - Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the disclaimer below.
+ *
+ * Atmel's name may not be used to endorse or promote products derived from
+ * this software without specific prior written permission.
+ *
+ * DISCLAIMER: THIS SOFTWARE IS PROVIDED BY ATMEL "AS IS" AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT ARE
+ * DISCLAIMED. IN NO EVENT SHALL ATMEL BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+ * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * ----------------------------------------------------------------------------
+ */
 
 OUTPUT_FORMAT("elf32-littlearm", "elf32-littlearm", "elf32-littlearm")
 OUTPUT_ARCH(arm)
@@ -34,8 +43,6 @@ MEMORY
     bkup_ram (w!rx) : ORIGIN = _backup_ram_start_addr, LENGTH = _backup_ram_len
     rom_aux  (rx)   : ORIGIN = _rom_start_addr + _slot_aux_offset, LENGTH = _slot_aux_len
 }
-
-/* cortexm_base.ld - with added .gnu.sgstubs */
 
 /* Section Definitions */
 SECTIONS
@@ -233,11 +240,11 @@ SECTIONS
 
     .gnu.sgstubs :
     {
-        . = ALIGN(32);
-        KEEP(*(.gnu.sgstubs*))
+        . = ALIGN(256);         /* Critical: 256-byte alignment */
+        __nsc_start = .;
+        *(.gnu.sgstubs*)        /* Collect all veneers */
+        . = ALIGN(256);
+        __nsc_end = .;
     } > nsc
-
 }
-
-
 
