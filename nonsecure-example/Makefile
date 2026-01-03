@@ -10,6 +10,7 @@ RIOTBASE ?= $(CURDIR)/../../RIOT
 # mark this as a non-secure image (skip some peripherial inits)
 CFLAGS += -DTZ_NS_IMAGE
 
+CFLAGS += -mcpu=cortex-m33 -mthumb -mfpu=fpv5-sp-d16 -mfloat-abi=hard
 CFLAGS += -mcmse
 CFLAGS += -Wno-cast-align
 CFLAGS += -Wno-error=cast-align
@@ -23,23 +24,9 @@ LINKER_SCRIPT = ../linker/nonsecure-memory.ld
 SECURE_BUILD_DIR ?= ../secure_bootloader/bin/$(BOARD)/
 SECURE_EXPORTS := $(SECURE_BUILD_DIR)/secure_exports.o
 
-LINKFLAGS += -Wl,--undefined=uart_write_secure
-LINKFLAGS += -Wl,--defsym=__ns_uart_write_secure=0x08030000
-
+# Secure image configures the board and CPU
 CFLAGS += -DDISABLE_BOARD_INIT=1
 CFLAGS += -DDISABLE_CPU_INIT=1
-
-# Uncomment these lines if you want to use platform support from external
-# repositories:
-#RIOTCPU ?= $(CURDIR)/../../RIOT/thirdparty_cpu
-#EXTERNAL_BOARD_DIRS ?= $(CURDIR)/../../RIOT/thirdparty_boards
-
-# Uncomment this to enable scheduler statistics for ps:
-#USEMODULE += schedstatistics
-
-# If you want to use native with valgrind, you should recompile native
-# with the target all-valgrind instead of all:
-# make -B clean all-valgrind
 
 # Comment this out to disable code in RIOT that does safety checking
 # which is not needed in a production environment but helps in the
@@ -47,26 +34,17 @@ CFLAGS += -DDISABLE_CPU_INIT=1
 DEVELHELP ?= 1
 
 # Change this to 0 show compiler invocation lines by default:
-QUIET ?= 1
+QUIET ?= 0
 
 # Modules to include:
 USEMODULE += shell
 USEMODULE += shell_cmds_default
 USEMODULE += ps
+
 # include and auto-initialize all available sensors
 #USEMODULE += saul_default
-
-# Use a network interface, if available. The handling is done in
-# Makefile.board.dep, which is processed recursively as part of the dependency
-# resolution.
 #FEATURES_OPTIONAL += netif
-
 #FEATURES_OPTIONAL += periph_rtc
-
-#ifneq (,$(filter msba2,$(BOARD)))
-#  USEMODULE += mci
-#  USEMODULE += random
-#endif
 
 include $(RIOTBASE)/Makefile.include
 

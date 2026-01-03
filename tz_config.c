@@ -8,24 +8,21 @@
  */
 
 #include "periph/uart.h"
+#include "stdio_base.h"
 #include "stm32l5xx.h"
 #include "arm_cmse.h"
 #include "core_cm33.h"
 #include <stdio.h>
 #include "include/tz_config.h"
 
-/*void __attribute__((cmse_nonsecure_entry)) uart_write_secure(uart_t uart, const uint8_t *data, size_t len) {
+__attribute__((cmse_nonsecure_entry, noinline))
+void uart_write_secure(uart_t uart, const uint8_t *data, size_t len) {
     uart_write(uart, data, len);
-}*/
+}
 
-//__attribute__((cmse_nonsecure_entry, section(".gnu.sgstubs"), aligned(32)))
-//void uart_write_secure(void) {
-//    __ASM volatile ("nop");
-//}
-
-__attribute__((cmse_nonsecure_entry))
-void uart_write_secure(void) {
-    __ASM volatile ("nop");
+__attribute__((cmse_nonsecure_entry, noinline))
+ssize_t stdio_read_secure(void* buffer, size_t len) {
+    return stdio_read(buffer, len);
 }
 
 void secure_periph_init(void) {
@@ -92,7 +89,7 @@ void jump_to_nonsecure(void) {
 
     /* set the stack pointer */
     __TZ_set_MSP_NS(msp_ns_value);
-    __set_MSP(0x20017FE0);
+    //__set_MSP(0x20017FE0);
 
     /* set VTOR */
     SCB_NS->VTOR = (uint32_t)ns_vector_table;

@@ -1,4 +1,4 @@
-/* secure-memory.ld: override Nonsecure-world memory for RIOT’s linker */
+/* nonsecure-memory.ld: override Nonsecure-world memory for RIOT’s linker */
 
 /* define memory regions for NS memory that will override RIOT's defaults
 
@@ -10,3 +10,5 @@ _ram_length     = 0x00028000;   /* NS SRAM                    */
 
 INCLUDE cortexm.ld
 
+PROVIDE(uart_write_secure = 0x08030001);
+PROVIDE(stdio_read_secure = 0x08030009);

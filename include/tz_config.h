@@ -1,3 +1,6 @@
+#include "periph/uart.h"
+#include "stdio_base.h"
+
 #ifndef TZ_CONFIG_H
 #define TZ_CONFIG_H
 
@@ -32,5 +35,8 @@ void TZ_init(void);
 void jump_to_nonsecure(void);
 
 void secure_periph_init(void);
+
+void uart_write_secure(uart_t uart, const uint8_t *data, size_t len);
+ssize_t stdio_read_secure(void* buffer, size_t len);
 
 #endif

@@ -3,7 +3,8 @@
 
 #include "periph/uart.h"
 
-//void __ns_uart_write_secure(uart_t uart, const uint8_t *data, size_t len);
-void __ns_uart_write_secure(void);
+extern void uart_write_secure(uart_t uart, const uint8_t *data, size_t len);
+extern ssize_t stdio_read_secure(void* buffer, size_t len);
 
 #endif
+
