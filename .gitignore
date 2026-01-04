@@ -53,3 +53,5 @@ dkms.conf
 
 # compiled binaries
 bin/
+secure-image/bin
+nonsecure-image/bin
