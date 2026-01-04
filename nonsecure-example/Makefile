@@ -39,7 +39,7 @@ QUIET ?= 0
 # Modules to include:
 USEMODULE += shell
 USEMODULE += shell_cmds_default
-USEMODULE += ps
+#USEMODULE += ps
 
 # include and auto-initialize all available sensors
 #USEMODULE += saul_default

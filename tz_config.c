@@ -25,6 +25,12 @@ ssize_t stdio_read_secure(void* buffer, size_t len) {
     return stdio_read(buffer, len);
 }
 
+static inline void nvic_set_irq_nonsecure(IRQn_Type irqn)
+{
+    uint32_t irq = (uint32_t)irqn;
+    NVIC->ITNS[irq >> 5] |= (1UL << (irq & 0x1F));
+}
+
 void secure_periph_init(void) {
     /* Enable GTZCEN */
     RCC->AHB1ENR |= RCC_AHB1ENR_GTZCEN;
@@ -78,7 +84,7 @@ void jump_to_nonsecure(void) {
     /* get the address of NS vector table */
     uint32_t *ns_vector_table = (uint32_t*)NON_SECURE_FLASH_ADDR;
 
-    /* mark certain peripherials as NS accessible */
+    /* make SRAM accessible through GTZC */
     secure_periph_init();
 
     /* map memory regions */
@@ -87,12 +93,12 @@ void jump_to_nonsecure(void) {
     uint32_t msp_ns_value = ns_vector_table[0];
     uint32_t reset_ns = ns_vector_table[1];
 
-    /* set the stack pointer */
     __TZ_set_MSP_NS(msp_ns_value);
-    //__set_MSP(0x20017FE0);
 
-    /* set VTOR */
     SCB_NS->VTOR = (uint32_t)ns_vector_table;
+
+    __DSB();
+    __ISB();
 
     /* create an entry point */
     funcptr_ns ns_entry = (funcptr_ns) cmse_nsfptr_create((void*)reset_ns);
@@ -100,4 +106,6 @@ void jump_to_nonsecure(void) {
     /* call */
     ns_entry();
 
+    /* never return */
+    while(1){}
 }
