@@ -20,7 +20,7 @@ CFLAGS += -fno-lto
 CFLAGS += -mabi=aapcs
 CFLAGS += -DRIOT_THREAD_ENABLE=0
 
-LINKER_SCRIPT = linker/secure-memory.ld
+LINKER_SCRIPT = ../linker/secure-memory.ld
 LINKFLAGS += -Wl,--cmse-implib,--out-implib=$(BINDIR)/secure_exports.o
 LINKFLAGS += -Wl,--just-symbols=$(SECURE_BUILD_DIR)/export.txt
 

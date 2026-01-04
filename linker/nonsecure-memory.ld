@@ -10,5 +10,13 @@ _ram_length     = 0x00028000;   /* NS SRAM                    */
 
 INCLUDE cortexm.ld
 
-PROVIDE(uart_write_secure = 0x08030001);
-PROVIDE(stdio_read_secure = 0x08030009);
+/*PROVIDE(uart_write_secure = 0x08030001);
+PROVIDE(stdio_read_secure = 0x08030009);*/
+
+/*EXTERN(uart_write_secure);
+PROVIDE(uart_write_secure = uart_write_secure);
+
+EXTERN(stdio_read_secure);
+PROVIDE(stdio_read_secure = stdio_read_secure);*/
+
+

@@ -7,18 +7,18 @@ RIOTBOOT_BUILD = 1
 CFLAGS += -DRIOTBOOT
 
 # Disable unused modules
-CFLAGS += -DNDEBUG -DLOG_LEVEL=LOG_NONE
-DISABLE_MODULE += core_panic
+#CFLAGS += -DNDEBUG -DLOG_LEVEL=LOG_NONE
+#DISABLE_MODULE += core_panic
 #DISABLE_MODULE += core_msg
 #DISABLE_MODULE += core_init
-DISABLE_MODULE += auto_init auto_init_%
-DISABLE_MODULE += pm_layered
+#DISABLE_MODULE += auto_init auto_init_%
+#DISABLE_MODULE += pm_layered
 
 # avoid using stdio
 #USEMODULE += stdio_null
 
 # RIOT codebase
-RIOTBASE ?= $(CURDIR)/../RIOT
+RIOTBASE ?= $(CURDIR)/../../RIOT
 
 include $(RIOTBASE)/Makefile.include
 

@@ -1,5 +1,5 @@
 # name of your application
-APPLICATION = default
+APPLICATION = default_ns
 
 # If no BOARD is found in the environment, use this default:
 BOARD ?= nucleo-l552ze-q
@@ -15,15 +15,6 @@ CFLAGS += -mcmse
 CFLAGS += -Wno-cast-align
 CFLAGS += -Wno-error=cast-align
 
-SECURE_BUILD_DIR ?= ../bin/$(BOARD)/
-
-LINKER_SCRIPT = ../linker/nonsecure-memory.ld
-
-# For NSC configuration
-
-SECURE_BUILD_DIR ?= ../secure_bootloader/bin/$(BOARD)/
-SECURE_EXPORTS := $(SECURE_BUILD_DIR)/secure_exports.o
-
 # Secure image configures the board and CPU
 CFLAGS += -DDISABLE_BOARD_INIT=1
 CFLAGS += -DDISABLE_CPU_INIT=1
@@ -31,7 +22,7 @@ CFLAGS += -DDISABLE_CPU_INIT=1
 # Comment this out to disable code in RIOT that does safety checking
 # which is not needed in a production environment but helps in the
 # development process:
-DEVELHELP ?= 1
+#DEVELHELP ?= 1
 
 # Change this to 0 show compiler invocation lines by default:
 QUIET ?= 0
@@ -50,3 +41,10 @@ include $(RIOTBASE)/Makefile.include
 
 ## Set a custom channel if needed
 include $(RIOTMAKE)/default-radio-settings.inc.mk
+
+# Get NSC location
+SECURE_BUILD_DIR ?= ../secure-image/bin/$(BOARD)/
+SECURE_EXPORTS := $(SECURE_BUILD_DIR)/secure_exports.o
+
+LINKER_SCRIPT = ../linker/nonsecure-memory.ld
+LINKFLAGS += $(SECURE_EXPORTS)
