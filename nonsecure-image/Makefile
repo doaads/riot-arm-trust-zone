@@ -10,6 +10,8 @@ RIOTBASE ?= $(CURDIR)/../../RIOT
 # mark this as a non-secure image (skip some peripherial inits)
 CFLAGS += -DTZ_NS_IMAGE
 
+RIOT_THREAD_STACKSIZE_MAIN ?= 4096
+
 CFLAGS += -mcpu=cortex-m33 -mthumb -mfpu=fpv5-sp-d16 -mfloat-abi=hard
 CFLAGS += -mcmse
 CFLAGS += -Wno-cast-align
@@ -25,15 +27,15 @@ CFLAGS += -DDISABLE_CPU_INIT=1
 #DEVELHELP ?= 1
 
 # Change this to 0 show compiler invocation lines by default:
-QUIET ?= 0
+QUIET ?= 1
 
 # Modules to include:
 USEMODULE += shell
 USEMODULE += shell_cmds_default
-#USEMODULE += ps
+
+#USEPKG += micro-ecc
 
 # include and auto-initialize all available sensors
-#USEMODULE += saul_default
 #FEATURES_OPTIONAL += netif
 #FEATURES_OPTIONAL += periph_rtc
 
@@ -48,3 +50,4 @@ SECURE_EXPORTS := $(SECURE_BUILD_DIR)/secure_exports.o
 
 LINKER_SCRIPT = ../linker/nonsecure-memory.ld
 LINKFLAGS += $(SECURE_EXPORTS)
+export OPENOCD_SKIP_VERIFY=1

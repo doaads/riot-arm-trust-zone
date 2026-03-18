@@ -31,10 +31,6 @@
 #include <arm_cmse.h>
 #include "core_cm33.h"
 
-
-#include "net/gnrc/pktdump.h"
-#include "net/gnrc.h"
-
 void uart_write(uart_t uart, const uint8_t *data, size_t len)
 {
     uart_write_secure(uart, data, len);
@@ -45,18 +41,19 @@ ssize_t stdio_read(void* buffer, size_t len)
     return stdio_read_secure(buffer, len);
 }
 
+void pm_off(void) {
+    return pm_off_secure();
+}
+
+static const shell_command_t shell_commands[] = {
+	{ NULL, NULL, NULL }
+};
 
 int main(void)
 {
-#ifdef MODULE_GNRC_PKTDUMP
-    gnrc_netreg_entry_t dump = GNRC_NETREG_ENTRY_INIT_PID(GNRC_NETREG_DEMUX_CTX_ALL,
-                                                          gnrc_pktdump_pid);
-    gnrc_netreg_register(GNRC_NETTYPE_UNDEF, &dump);
-#endif
-
     (void) puts("Welcome to RIOT! Running in Non-secure world.");
     char line_buf[SHELL_DEFAULT_BUFSIZE];
-    shell_run(NULL, line_buf, SHELL_DEFAULT_BUFSIZE);
+    shell_run(shell_commands, line_buf, SHELL_DEFAULT_BUFSIZE);
 
     return 0;
 }

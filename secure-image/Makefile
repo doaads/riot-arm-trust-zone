@@ -9,6 +9,9 @@ USEMODULE += stdin
 #USEMODULE += ps
 USEPKG += cmsis
 
+# ECDSA signing implementation
+USEPKG += micro-ecc
+
 #RIOT_THREAD_STACKSIZE_MAIN ?= 4096
 
 CFLAGS += -mcmse
@@ -18,7 +21,6 @@ CFLAGS += -Wno-cast-align
 CFLAGS += -Wno-error=cast-align
 CFLAGS += -fno-lto
 CFLAGS += -mabi=aapcs
-CFLAGS += -DRIOT_THREAD_ENABLE=0
 
 LINKER_SCRIPT = ../linker/secure-memory.ld
 LINKFLAGS += -Wl,--cmse-implib,--out-implib=$(BINDIR)/secure_exports.o

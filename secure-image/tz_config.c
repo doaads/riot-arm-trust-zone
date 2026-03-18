@@ -8,12 +8,19 @@
  */
 
 #include "periph/uart.h"
+#include "periph/pm.h"
+#include "periph/hwrng.h"
 #include "stdio_base.h"
 #include "stm32l5xx.h"
 #include "arm_cmse.h"
 #include "core_cm33.h"
 #include <stdio.h>
 #include "include/tz_config.h"
+
+__attribute__((cmse_nonsecure_entry, noinline))
+void pm_off_secure(void) {
+    pm_off();
+}
 
 __attribute__((cmse_nonsecure_entry, noinline))
 void uart_write_secure(uart_t uart, const uint8_t *data, size_t len) {
@@ -23,12 +30,6 @@ void uart_write_secure(uart_t uart, const uint8_t *data, size_t len) {
 __attribute__((cmse_nonsecure_entry, noinline))
 ssize_t stdio_read_secure(void* buffer, size_t len) {
     return stdio_read(buffer, len);
-}
-
-static inline void nvic_set_irq_nonsecure(IRQn_Type irqn)
-{
-    uint32_t irq = (uint32_t)irqn;
-    NVIC->ITNS[irq >> 5] |= (1UL << (irq & 0x1F));
 }
 
 void secure_periph_init(void) {
@@ -94,8 +95,13 @@ void jump_to_nonsecure(void) {
     uint32_t reset_ns = ns_vector_table[1];
 
     __TZ_set_MSP_NS(msp_ns_value);
+    __TZ_set_PSP_NS(msp_ns_value);
 
     SCB_NS->VTOR = (uint32_t)ns_vector_table;
+
+    NVIC_SetTargetState(SysTick_IRQn);
+    NVIC_SetTargetState(PendSV_IRQn);
+    NVIC_SetTargetState(SVCall_IRQn);
 
     __DSB();
     __ISB();

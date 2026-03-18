@@ -1,4 +1,4 @@
-add-symbol-file nonsecure-example/bin/nucleo-l552ze-q/default.elf 0x08040000
+add-symbol-file nonsecure-image/bin/nucleo-l552ze-q/default_ns.elf 0x08040000
 target remote localhost:3333
 monitor reset halt
 

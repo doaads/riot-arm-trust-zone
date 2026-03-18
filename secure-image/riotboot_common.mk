@@ -4,7 +4,7 @@ FEATURES_REQUIRED += riotboot
 # Set RIOTBOOT_BUILD to indicate a riotboot application build
 RIOTBOOT_BUILD = 1
 # Provide a define to detect if building the bootloader
-CFLAGS += -DRIOTBOOT
+#CFLAGS += -DRIOTBOOT
 
 # Disable unused modules
 #CFLAGS += -DNDEBUG -DLOG_LEVEL=LOG_NONE
