@@ -13,11 +13,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: install toolchain
-      run: sudo apt install git gcc-arm-none-eabi make gcc-multilib libstdc++-arm-none-eabi-newlib doxygen wget unzip
     - name: make riot dir
       run: mkdir ../RIOT
     - name: clone RIOT
-      run: git clone https://github.com/doaads/RIOT ../RIOT --depth 1 
+      run: git clone https://github.com/doaads/RIOT ../RIOT --depth 1 --branch trustzone
     - name: make
       run: make BOARD=nucleo-l552ze-q
