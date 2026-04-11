@@ -1,24 +1,30 @@
-# Default RIOT bootloader
-APPLICATION = riotboot_secure
+SECURE_DIR    := secure-image
+NONSECURE_DIR := nonsecure-image
 
-# Include riotboot flash partition functionality
-USEMODULE += riotboot_slot
-USEPKG += cmsis
-#USEMODULE += cmsis_core
+.PHONY: all
+all: secure nonsecure
 
-# We don't want to re-configure any hardware
-CFLAGS += -DDISABLE_BOARD_INIT=1
-CFLAGS += -DDISABLE_CPU_INIT=1
+.PHONY: flash
+flash: secure-flash nonsecure-flash
 
-# CFLAGS += -DCONFIG_TRUSTZONE
-# CFLAGS += -DCONFIG_TRUSTZONE_SECURE
+.PHONY: clean
+clean:
+	$(MAKE) -C $(SECURE_DIR) clean
+	$(MAKE) -C $(NONSECURE_DIR) clean
 
-CFLAGS += -mcmse
-CFLAGS += -mcpu=cortex-m33
-CFLAGS += -Wno-cast-align
-CFLAGS += -Wno-error=cast-align
+.PHONY: secure
+secure:
+	$(MAKE) -C $(SECURE_DIR) $(MAKECMDGOALS)
 
-LINKER_SCRIPT = stm32-secure.ld
+.PHONY: secure-flash
+secure-flash:
+	$(MAKE) -C $(SECURE_DIR) flash
 
+.PHONY: nonsecure
+nonsecure:
+	$(MAKE) -C $(NONSECURE_DIR) $(MAKECMDGOALS)
 
-include riotboot_common.mk
+.PHONY: nonsecure-flash
+nonsecure-flash:
+	$(MAKE) -C $(NONSECURE_DIR) flash
+

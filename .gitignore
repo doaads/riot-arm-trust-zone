@@ -53,3 +53,10 @@ dkms.conf
 
 # compiled binaries
 bin/
+secure-image/bin
+nonsecure-image/bin
+
+# clangd cache
+nonsecure-image/.cache/
+secure-image/.cache/
+.cache/
