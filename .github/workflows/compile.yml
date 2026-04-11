@@ -16,6 +16,6 @@ jobs:
     - name: make riot dir
       run: mkdir ../RIOT
     - name: clone RIOT
-      run: git clone https://github.com/doaads/RIOT ../RIOT --depth 1 
+      run: git clone https://github.com/doaads/RIOT ../RIOT --depth 1 --branch trustzone
     - name: make
       run: make BOARD=nucleo-l552ze-q
