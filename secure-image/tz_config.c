@@ -17,42 +17,27 @@
 #include <stdio.h>
 #include "include/tz_config.h"
 
-__attribute__((cmse_nonsecure_entry, noinline))
-void pm_off_secure(void) {
-    pm_off();
-}
-
-__attribute__((cmse_nonsecure_entry, noinline))
-void uart_write_secure(uart_t uart, const uint8_t *data, size_t len) {
-    uart_write(uart, data, len);
-}
-
-__attribute__((cmse_nonsecure_entry, noinline))
-ssize_t stdio_read_secure(void* buffer, size_t len) {
-    return stdio_read(buffer, len);
-}
-
+/* configure secure peripherials such as GTZC and FPU */
 void secure_periph_init(void) {
+
+    /* Give NS access to FPU */
+    SCB->NSACR |= SCB_NSACR_CP10_Msk | SCB_NSACR_CP11_Msk;
+
     /* Enable GTZCEN */
     RCC->AHB1ENR |= RCC_AHB1ENR_GTZCEN;
+    
+    /* mark SRAM2 as NS accessible */
+    GTZC_MPCBB2->VCTR[0] = 0x00000000;
+    GTZC_MPCBB2->VCTR[1] = 0x00000000;
 
-    /* mark SRAM accessible */
-    for (int i = 0; i < 10; i++) {
-        GTZC_MPCBB1->VCTR[i] = 0xFFFFFFFF;
-    }
-
-    for (int i = 10; i < 24; i++) {
-        GTZC_MPCBB1->VCTR[i] = 0x00000000;
-    }
-
-    for (int i = 0; i < 12; i++) {
-        GTZC_MPCBB2->VCTR[i] = 0xFFFFFFFF;
-    }
+    /* Enable clock */
+    RCC->APB1ENR1 |= RCC_APB1ENR1_LPTIM1EN;
 
     __DSB();
     __ISB();
 }
 
+/* map SAU regions */
 void TZ_init(void) {
     SAU->CTRL = 0;  /* Disable SAU before configuring */
 
@@ -61,7 +46,7 @@ void TZ_init(void) {
     SAU->RBAR = (NON_SECURE_FLASH_ADDR & SAU_RBAR_BADDR_Msk);
     SAU->RLAR = (NON_SECURE_FLASH_END & SAU_RLAR_LADDR_Msk) | SAU_RLAR_ENABLE_Msk;
 
-    /* Allow Non-Secure SRAM access (0x20018000 - 0x2003FFFF) */
+    /* Allow Non-Secure SRAM access to SRAM2 (0x20030000 - 0x2003FFFF) */
     SAU->RNR = 1;
     SAU->RBAR = (NON_SECURE_SRAM_ADDR & SAU_RBAR_BADDR_Msk);
     SAU->RLAR = (NON_SECURE_SRAM_END & SAU_RLAR_LADDR_Msk) | SAU_RLAR_ENABLE_Msk;
@@ -81,11 +66,12 @@ void TZ_init(void) {
 
 typedef void (*funcptr_ns)(void) __attribute__((cmse_nonsecure_call));
 
+/* prepare the NS context for first entry */
 void jump_to_nonsecure(void) {
     /* get the address of NS vector table */
     uint32_t *ns_vector_table = (uint32_t*)NON_SECURE_FLASH_ADDR;
 
-    /* make SRAM accessible through GTZC */
+    /* set up GTZC and FPU */
     secure_periph_init();
 
     /* map memory regions */
@@ -95,13 +81,8 @@ void jump_to_nonsecure(void) {
     uint32_t reset_ns = ns_vector_table[1];
 
     __TZ_set_MSP_NS(msp_ns_value);
-    __TZ_set_PSP_NS(msp_ns_value);
 
     SCB_NS->VTOR = (uint32_t)ns_vector_table;
-
-    NVIC_SetTargetState(SysTick_IRQn);
-    NVIC_SetTargetState(PendSV_IRQn);
-    NVIC_SetTargetState(SVCall_IRQn);
 
     __DSB();
     __ISB();

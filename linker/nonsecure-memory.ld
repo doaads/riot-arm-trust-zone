@@ -5,8 +5,8 @@
 /* Non-Secure partitions: */
 _rom_start_addr = 0x08040000;   /* start of Bank 2 = NS Flash */
 _rom_length     = 0x0003FFFF;   /* NS Flash                   */
-_ram_start_addr = 0x20018000;   /* start of NS SRAM           */
-_ram_length     = 0x00027FFF;   /* NS SRAM                    */
+_ram_start_addr = 0x20030000;   /* start of NS SRAM           */
+_ram_length     = 0x0000FFFF;   /* NS SRAM                    */
 
 _estack = _ram_start_addr + 0x400;
 
