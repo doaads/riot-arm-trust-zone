@@ -1,3 +1,4 @@
+#include "periph/hwrng.h"
 #include "periph/uart.h"
 #include "stdio_base.h"
 #include "periph/pm.h"
@@ -35,3 +36,8 @@ int ecc_import_pubkey_secure(uint8_t *out, size_t *out_len) {
     return ecc_export_pubkey(out, out_len);
 }
 
+/* Hardware Random Number Generator (for micro-ecc) */
+__attribute__((cmse_nonsecure_entry))
+void hwrng_read_secure(void *buf, unsigned int num) {
+    return hwrng_read(buf, num);
+}

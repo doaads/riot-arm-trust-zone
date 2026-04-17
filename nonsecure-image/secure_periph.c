@@ -15,3 +15,6 @@ void pm_off(void) {
     return pm_off_secure();
 }
 
+void hwrng_read(void *buf, unsigned int num) {
+    return hwrng_read_secure(buf, num);
+}

@@ -30,8 +30,12 @@ QUIET ?= 1
 USEMODULE += shell
 USEMODULE += shell_cmds_default
 USEMODULE += hashes
+USEMODULE += base64
+
+USEPKG += micro-ecc
 
 DISABLE_MODULE += cortexm_fpu
+CFLAGS += -DuECC_OPTIMIZATION_LEVEL=1
 
 include $(RIOTBASE)/Makefile.include
 

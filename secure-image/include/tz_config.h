@@ -1,8 +1,7 @@
-#include "periph/uart.h"
-#include "stdio_base.h"
-
 #ifndef TZ_CONFIG_H
 #define TZ_CONFIG_H
+
+/* Default security attributions for Cortex-M33 - Overrided in tz_security_attribution.mk */
 
 /* Non-Secure Flash: Flash Bank 2 (256 KB) */
 #ifndef NON_SECURE_FLASH_ADDR
@@ -12,7 +11,7 @@
 #  define NON_SECURE_FLASH_END   0x0807FFFF   /* end of Bank 2 */ 
 #endif
 
-/* Non-Secure SRAM: upper half of SRAM1+SRAM2 */
+/* Non-Secure SRAM: SRAM2 */
 #ifndef NON_SECURE_SRAM_ADDR
 #  define NON_SECURE_SRAM_ADDR   0x20030000   /* start of NS-SRAM */ 
 #endif

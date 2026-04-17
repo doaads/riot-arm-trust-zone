@@ -17,4 +17,7 @@ int ecc_sign_secure(const unsigned char *hash, int hash_len, char *out, unsigned
 /* API client facing function renamed to import for clarity */
 int ecc_import_pubkey_secure(uint8_t *out, size_t *out_len);
 
+/* hwrng */
+void hwrng_read_secure(void *buf, unsigned int num);
+
 #endif

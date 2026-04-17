@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <string.h>
 #include "uECC.h"
 #include "base64.h"
@@ -13,6 +14,7 @@ static int rng_func(uint8_t *dest, unsigned size) {
 }
 
 int ecc_init(void) {
+    hwrng_init();
     curve = uECC_secp256r1();
     uECC_set_rng(rng_func);
     return 0;
@@ -24,10 +26,11 @@ int ecc_generate_key(void) {
     if (!uECC_make_key(s_public_key, s_private_key, curve)) {
         return -1;
     }
+
     return 0;
 }
 
-/* DER-sign a message */
+/* raw-sign a message */
 int ecc_sign_raw(const uint8_t *hash, size_t hash_len, uint8_t *sig, size_t *sig_len)
 {
     uint8_t raw_sig[64];
@@ -63,10 +66,10 @@ int ecc_sign(const uint8_t *hash, size_t hash_len, char *out, size_t *out_len)
 
 /* export the public key for signature validation */
 int ecc_export_pubkey(uint8_t *out, size_t *out_len) {
-    if (*out_len < 65) return -1;
+    if (*out_len < 64) return -1;
 
-    out[0] = 0x04;
-    memcpy(out + 1, s_public_key, 64);
-    *out_len = 65;
+    memcpy(out, s_public_key, 64);
+
+    *out_len = 64;
     return 0;
 }
