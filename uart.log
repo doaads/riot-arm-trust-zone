@@ -1,0 +1,115 @@
+õmain(): This is RIOT! (Version: a9311-trustzone)
+RIOT OS secure-bootloader
+
+> Initializing crypto...
+
+> Generating ECC private key...
+
+> Done! Booting application...
+
+main(): This is RIOT! (Version: a9311-trustzone)
+Welcome to RIOT! Running in Non-secure world.
+> demo
+Demo script for TrustZone security check
+
+1. Attempt print private key using uart_write
+? PRIVKEY:
+eY2:ŒÞ3†}ÃÒ×ýô.ªÔà+¼‹_²ƒ=øþq
+(PASS if empty)
+2. Attempt rewrite private key using stdio_read
+! FAIL: buffer modified
+3. Attempt direct access to private key
+*** RIOT kernel panic:
+HARD FAULT HANDLER
+
+*** rebooting...
+
+main(): This is RIOT! (Version: a9311-trustzone)
+RIOT OS secure-bootloader
+
+> Initializing crypto...
+
+> Generating ECC private key...
+
+> Done! Booting application...
+
+main(): This is RIOT! (Version: a9311-trustzone)
+Welcome to RIOT! Running in Non-secure world.
+> 
+C³»À‡ÎæÿÎÜ¹ Àüþ
+> help
+Command              Description
+---------------------------------------
+sign                 Sign message with ECDSA (delegate to S world)
+verify               Verify ECDSA signature (in NS world)
+sign-verify          ECDSA sign & verify
+demo                 directly access secure memory
+pm                   interact with layered PM subsystem
+version              Prints current RIOT_VERSION
+reboot               Reboot the node
+> demo
+> reboot
+main(): This is RIOT! (Version: a9311-trustzone)
+RIOT OS secure-bootloader
+
+> Initializing crypto...
+
+> Generating ECC private key...
+
+> Done! Booting application...
+
+main(): This is RIOT! (Version: a9311-trustzone)
+Welcome to RIOT! Running in Non-secure world.
+> demo
+Demo script for TrustZone security check
+
+1. Attempt print private key using uart_write
+? PRIVKEY:
+
+(PASS if empty)
+2. Attempt rewrite private key using stdio_read
+> PASS
+3. Attempt direct access to private key
+*** RIOT kernel panic:
+HARD FAULT HANDLER
+
+*** rebooting...
+
+main(): This is RIOT! (Version: a9311-trustzone)
+RIOT OS secure-bootloader
+
+> Initializing crypto...
+
+> Generating ECC private key...
+
+> Done! Booting application...
+
+main(): This is RIOT! (Version: a9311-trustzone)
+Welcome to RIOT! Running in Non-secure world.
+> reboot
+main(): This is RIOT! (Version: a9311-trustzone)
+RIOT OS secure-bootloader
+
+> Initializing crypto...
+
+> Generating ECC private key...
+
+> Done! Booting application...
+
+main(): This is RIOT! (Version: a9311-trustzone)
+Welcome to RIOT! Running in Non-secure world.
+> help
+Command              Description
+---------------------------------------
+sign                 Sign message with ECDSA (delegate to S world)
+verify               Verify ECDSA signature (in NS world)
+sign-verify          ECDSA sign & verify
+demo                 directly access secure memory
+pm                   interact with layered PM subsystem
+version              Prints current RIOT_VERSION
+reboot               Reboot the node
+> version
+a9311-trustzone
+> sign-verify
+Usage: sign-verify <message>
+> 

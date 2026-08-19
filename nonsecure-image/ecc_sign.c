@@ -1,4 +1,5 @@
 #include "secure_api/ecc_sign.h"
+#include "secure_api/secure_periph.h"
 #include "include/ecc_helpers.h"
 #include "uECC.h"
 #include <stdio.h>
@@ -107,3 +108,46 @@ int sign_verify_cmd(int argc, char **argv) {
     puts("> Verifying signature...");
     return ecc_verify_signature(msg, msg_len, sig_b64, sig_len);
 }
+
+#ifdef __TZ_INSECURE_DEV
+int invalid_access_demo(int argc, char **argv) {
+    (void)argc;
+    (void)argv;
+
+    uint8_t *privkey = ecc_import_privkey_insecure();
+
+    puts("Demo script for TrustZone security check\n");
+
+    /* attempt print using uart_write */
+    puts("1. Attempt print private key using uart_write");
+    printf("? PRIVKEY:\n");
+    uart_write_secure(0, privkey, sizeof(uint8_t) * 32);
+    printf("\n(PASS if empty)\n");
+
+    /* attempt write using stdio_read */
+    puts("2. Attempt rewrite private key using stdio_read");
+    size_t ret = stdio_read_secure(privkey, sizeof(uint8_t) * 32);
+    if (ret) {
+        puts("! FAIL: buffer modified");
+    } else {
+        puts("> PASS");
+    }
+
+    puts("3. Attempt direct access to private key");
+    printf("Privkey byte: %d\n", *privkey);
+
+    puts("! FAIL: Unreachable! Expected secure fault");
+
+    return 0;
+}
+#else
+int invalid_access_demo(int argc, char **argv) {
+    (void)argc;
+    (void)argv;
+
+    int *ptr = (int*)0x08000000;
+    printf("Secure image start address: %d\n", *ptr);
+
+    return 0;
+}
+#endif

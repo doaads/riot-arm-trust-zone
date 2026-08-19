@@ -21,4 +21,9 @@ int ecc_sign(const uint8_t *hash, size_t hash_len, char *out, size_t *out_len);
 /* other */
 int ecc_export_pubkey(uint8_t *out, size_t *out_len);
 
+/* debug */
+# ifdef __TZ_INSECURE_DEV
+uint8_t *ecc_export_privkey(void);
+#endif
+
 #endif

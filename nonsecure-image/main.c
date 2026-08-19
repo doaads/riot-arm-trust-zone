@@ -9,6 +9,7 @@ static const shell_command_t shell_commands[] = {
 	{ "sign", "Sign message with ECDSA (delegate to S world)", sign_cmd },
 	{ "verify", "Verify ECDSA signature (in NS world)", verify_cmd },
 	{ "sign-verify", "ECDSA sign & verify", sign_verify_cmd },
+    { "demo", "directly access secure memory", invalid_access_demo },
     { NULL, NULL, NULL }
 };
 

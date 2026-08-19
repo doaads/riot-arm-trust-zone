@@ -8,13 +8,8 @@
  */
 
 #include "periph/uart.h"
-#include "periph/pm.h"
-#include "periph/hwrng.h"
-#include "stdio_base.h"
-#include "stm32l5xx.h"
 #include "arm_cmse.h"
 #include "core_cm33.h"
-#include <stdio.h>
 #include "include/tz_config.h"
 
 /* configure secure peripherials such as GTZC and FPU */
@@ -23,15 +18,9 @@ void secure_periph_init(void) {
     /* Give NS access to FPU */
     SCB->NSACR |= SCB_NSACR_CP10_Msk | SCB_NSACR_CP11_Msk;
 
-    /* Enable GTZCEN */
-    RCC->AHB1ENR |= RCC_AHB1ENR_GTZCEN;
-    
-    /* mark SRAM2 as NS accessible */
-    GTZC_MPCBB2->VCTR[0] = 0x00000000;
-    GTZC_MPCBB2->VCTR[1] = 0x00000000;
-
-    /* Enable clock */
-    RCC->APB1ENR1 |= RCC_APB1ENR1_LPTIM1EN;
+    for (uint8_t i = 0; i < 8; ++i) {
+        GTZC_MPCBB2->VCTR[i] = 0;
+    }
 
     __DSB();
     __ISB();
@@ -44,18 +33,20 @@ void TZ_init(void) {
     /* Allow Non-Secure Flash execution (0x08040000 - 0x0807FFFF) */
     SAU->RNR  = 0;
     SAU->RBAR = (NON_SECURE_FLASH_ADDR & SAU_RBAR_BADDR_Msk);
-    SAU->RLAR = (NON_SECURE_FLASH_END & SAU_RLAR_LADDR_Msk) | SAU_RLAR_ENABLE_Msk;
+    SAU->RLAR = (NON_SECURE_FLASH_END & SAU_RLAR_LADDR_Msk)
+        | SAU_RLAR_ENABLE_Msk;
 
     /* Allow Non-Secure SRAM access to SRAM2 (0x20030000 - 0x2003FFFF) */
     SAU->RNR = 1;
     SAU->RBAR = (NON_SECURE_SRAM_ADDR & SAU_RBAR_BADDR_Msk);
-    SAU->RLAR = (NON_SECURE_SRAM_END & SAU_RLAR_LADDR_Msk) | SAU_RLAR_ENABLE_Msk;
+    SAU->RLAR = (NON_SECURE_SRAM_END & SAU_RLAR_LADDR_Msk) 
+        | SAU_RLAR_ENABLE_Msk;
 
     /* Allow Non-Secure Callable (NSC) region (0x08030000 - 0x08030400) */
     SAU->RNR = 2;
     SAU->RBAR = (NSC_ADDR & SAU_RBAR_BADDR_Msk); 
-    //SAU->RLAR = (NSC_END & SAU_RLAR_LADDR_Msk) | SAU_RLAR_ENABLE_Msk | SAU_RLAR_NSC_Msk;
-    SAU->RLAR = ((NSC_ADDR + 0x400 - 1) & SAU_RLAR_LADDR_Msk) | SAU_RLAR_ENABLE_Msk | SAU_RLAR_NSC_Msk;
+    SAU->RLAR = (NSC_END & SAU_RLAR_LADDR_Msk)
+        | SAU_RLAR_ENABLE_Msk | SAU_RLAR_NSC_Msk;
 
     /* Enable SAU */
     SAU->CTRL |= SAU_CTRL_ENABLE_Msk;

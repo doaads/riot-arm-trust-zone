@@ -10,4 +10,6 @@ int verify_cmd(int argc, char **argv);
 
 int sign_verify_cmd(int argc, char **argv);
 
+int invalid_access_demo(int argc, char **argv);
+
 #endif
